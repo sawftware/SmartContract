@@ -29,8 +29,8 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata {
 
     string private _name;
     string private _symbol;
-    bool public _revealed;
-    string public _notRevealedUri;
+    bool private _revealed;
+    string private _notRevealedUri;
     
     mapping(uint256 => TokenOwnership) internal _ownerships;
     mapping(address => AddressData) private _addressData;
@@ -45,11 +45,15 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata {
         _notRevealedUri = _initNotRevealedUri;
     }
   
-    function _setRevealed() internal {
-        _revealed = true;
+    function _getRevealed() internal view returns (bool) {
+        return _revealed;
     }
 
-    function totalSupply() public view  returns (uint256) {
+    function _setRevealed(bool revealed) internal {
+        _revealed = revealed;
+    }
+
+    function totalSupply() public view returns (uint256) {
         return _nextTokenId - 1;
     }
 

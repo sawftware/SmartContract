@@ -6,12 +6,13 @@ import "./ERC721A.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Contract is ERC721A, Ownable, ReentrancyGuard{
+contract Contract is ERC721A, Ownable, ReentrancyGuard {
     
     uint256 public constant maxSupply = 7777;
-    uint public _price = 0.05 ether;
     uint256 public maxBuyPerTx = 5;
-    bool public _paused;
+
+    uint private _price = 0.05 ether;
+    bool private _paused;
     string private _baseTokenURI;
 
     constructor(string memory name, string memory symbol, string memory notRevealedUri) ERC721A(name, symbol, notRevealedUri) {
@@ -26,8 +27,12 @@ contract Contract is ERC721A, Ownable, ReentrancyGuard{
         _price = price;
     }
 
-    function setRevealed() external onlyOwner() {
-        _setRevealed();
+    function getRevealed() view public returns (bool) {
+        return _getRevealed();
+    }
+
+    function setRevealed(bool revealed) external onlyOwner() {
+        _setRevealed(revealed);
     }
     
     function mint(uint256 mintAmount) external payable mintCompliance(mintAmount) {
@@ -50,7 +55,6 @@ contract Contract is ERC721A, Ownable, ReentrancyGuard{
     function withdraw() public onlyOwner {
         payable(msg.sender).transfer(address(this).balance);
     }
-
     
     function _baseURI() internal view virtual override returns (string memory) {
         return _baseTokenURI;
