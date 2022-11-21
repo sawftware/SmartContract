@@ -7,13 +7,13 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 
-contract TheGenies is ERC721A, Ownable, ReentrancyGuard{
+contract Contract is ERC721A, Ownable, ReentrancyGuard {
     uint256 public constant maxSupply = 7777;
     uint public _price = 0.05 ether;
     uint256 public maxBuyPerTx = 5;
     bool public paused;
 
-    constructor(string memory _notRevealedUri) ERC721A("TheGenies", "GENIE", _notRevealedUri) {
+    constructor(string memory _name, string memory _symbol, string memory _notRevealedUri) ERC721A(_name, _symbol, _notRevealedUri) {
         paused = true;
     }
 
@@ -23,13 +23,13 @@ contract TheGenies is ERC721A, Ownable, ReentrancyGuard{
     }
 
     // Write a new price
-    function setPrice(uint256 _newPrice) external onlyOwner() {
+    function setPrice(uint256 _newPrice) external onlyOwner {
         _price = _newPrice;
     }
 
     // Reveal the NFTs
-    function setRevealed() external onlyOwner() {
-        _setRevealed();
+    function setRevealed(bool _revealed) external onlyOwner {
+        _setRevealed(_revealed);
     }
     
     // Mint

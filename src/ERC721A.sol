@@ -70,8 +70,8 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata {
     }
   
     //only owner
-    function _setRevealed() internal {
-        _revealed = true;
+    function _setRevealed(bool revealed) internal {
+        _revealed = revealed;
     }
 
     /**
