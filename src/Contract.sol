@@ -7,43 +7,44 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Contract is ERC721A, Ownable, ReentrancyGuard{
+    
     uint256 public constant maxSupply = 7777;
     uint public _price = 0.05 ether;
     uint256 public maxBuyPerTx = 5;
-    bool public paused;
+    bool public _paused;
     string private _baseTokenURI;
 
     constructor(string memory name, string memory symbol, string memory notRevealedUri) ERC721A(name, symbol, notRevealedUri) {
-        paused = true;
+        _paused = true;
     }
 
-    function getPrice() view public returns (uint256){
+    function getPrice() view public returns (uint256) {
         return _price;
     }
 
-    function setPrice(uint256 _newPrice) external onlyOwner() {
-        _price = _newPrice;
+    function setPrice(uint256 price) external onlyOwner() {
+        _price = price;
     }
 
     function setRevealed() external onlyOwner() {
         _setRevealed();
     }
     
-    function mint(uint256 _mintAmount) external payable mintCompliance(_mintAmount) {
-        require(paused == false, "Must be unpaused");
-        require(msg.value >= _price * _mintAmount, "Not enough funds");
-        _safeMint(msg.sender, _mintAmount);
+    function mint(uint256 mintAmount) external payable mintCompliance(mintAmount) {
+        require(_paused == false, "Must be unpaused");
+        require(msg.value >= _price * mintAmount, "Not enough funds");
+        _safeMint(msg.sender, mintAmount);
     }
 
-    modifier mintCompliance(uint256 _mintAmount) {
-        require(_mintAmount > 0 && _mintAmount <= maxBuyPerTx, "Invalid buy amount");
-        require(totalSupply() + _mintAmount <= maxSupply, "Sold out!");
+    modifier mintCompliance(uint256 mintAmount) {
+        require(mintAmount > 0 && mintAmount <= maxBuyPerTx, "Invalid buy amount");
+        require(totalSupply() + mintAmount <= maxSupply, "Sold out!");
         _;
     }
 
-    function devMint(uint256 _qty) external onlyOwner {
-        require(paused == true, "Must be paused");
-        _safeMint(msg.sender, _qty);
+    function devMint(uint256 qty) external onlyOwner {
+        require(_paused == true, "Must be paused");
+        _safeMint(msg.sender, qty);
     }
 
     function withdraw() public onlyOwner {
@@ -59,7 +60,7 @@ contract Contract is ERC721A, Ownable, ReentrancyGuard{
         _baseTokenURI = baseURI;
     }
 
-    function setPaused(bool _paused) external onlyOwner {
-        paused = _paused;
+    function setPaused(bool paused) external onlyOwner {
+        _paused = paused;
     }
 }
