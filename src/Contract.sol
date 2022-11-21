@@ -19,20 +19,20 @@ contract Contract is ERC721A, Ownable, ReentrancyGuard {
         _paused = true;
     }
 
-    function getPrice() view public returns (uint256) {
-        return _price;
-    }
-
     function setPrice(uint256 price) external onlyOwner() {
         _price = price;
     }
 
-    function getRevealed() view public returns (bool) {
-        return _getRevealed();
-    }
-
     function setRevealed(bool revealed) external onlyOwner() {
         _setRevealed(revealed);
+    }
+
+    function setBaseURI(string calldata baseURI) external onlyOwner {
+        _baseTokenURI = baseURI;
+    }
+
+    function setPaused(bool paused) external onlyOwner {
+        _paused = paused;
     }
     
     function mint(uint256 mintAmount) external payable mintCompliance(mintAmount) {
@@ -60,11 +60,12 @@ contract Contract is ERC721A, Ownable, ReentrancyGuard {
         return _baseTokenURI;
     }
 
-    function setBaseURI(string calldata baseURI) external onlyOwner {
-        _baseTokenURI = baseURI;
+    function getPrice() view public returns (uint256) {
+        return _price;
     }
 
-    function setPaused(bool paused) external onlyOwner {
-        _paused = paused;
+    function getRevealed() view public returns (bool) {
+        return _getRevealed();
     }
+
 }
