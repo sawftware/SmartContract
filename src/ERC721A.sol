@@ -32,19 +32,19 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata, DefaultOperatorFi
     string private _name;
     string private _symbol;
     bool private _revealed;
-    string private _notRevealedUri;
+    string private _notRevealedName;
     
     mapping(uint256 => TokenOwnership) internal _ownerships;
     mapping(address => AddressData) private _addressData;
     mapping(uint256 => address) private _tokenApprovals;
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
-    constructor(string memory name_, string memory symbol_, string memory _initNotRevealedUri) {
+    constructor(string memory name_, string memory symbol_, string memory _initNotRevealedName) {
         _name = name_;
         _symbol = symbol_;
         _nextTokenId = 1;
         _revealed = false;
-        _notRevealedUri = _initNotRevealedUri;
+        _notRevealedName = _initNotRevealedName;
     }
   
     function _getRevealed() internal view returns (bool) {
@@ -111,12 +111,13 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata, DefaultOperatorFi
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         require(_exists(tokenId), 'ERC721Metadata: URI query for nonexistent token');
         
+        string memory baseURI = _baseURI();
+
         if(_revealed == false) {
-            return _notRevealedUri;
+            return bytes(baseURI).length != 0 ? string(abi.encodePacked(baseURI, _notRevealedName, ".json")) : '';
         }
 
-        string memory baseURI = _baseURI();
-        return bytes(baseURI).length != 0 ? string(abi.encodePacked(baseURI, tokenId.toString(),".json")) : '';
+        return bytes(baseURI).length != 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), ".json")) : '';
     }
 
     function _baseURI() internal view virtual returns (string memory) {

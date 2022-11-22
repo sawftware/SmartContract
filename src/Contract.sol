@@ -15,7 +15,7 @@ contract Contract is ERC721A, Ownable, ReentrancyGuard {
     bool private _paused;
     string private _baseTokenURI;
 
-    constructor(string memory name, string memory symbol, string memory notRevealedUri) ERC721A(name, symbol, notRevealedUri) {
+    constructor(string memory name, string memory symbol, string memory notRevealedName) ERC721A(name, symbol, notRevealedName) {
         _paused = true;
     }
 
