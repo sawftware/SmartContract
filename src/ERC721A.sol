@@ -11,7 +11,9 @@ import '@openzeppelin/contracts/utils/Context.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
 
-contract ERC721A is Context, ERC165, IERC721, IERC721Metadata {
+import {DefaultOperatorFilterer} from "./royalties/DefaultOperatorFilterer.sol";
+
+contract ERC721A is Context, ERC165, IERC721, IERC721Metadata, DefaultOperatorFilterer {
     using Address for address;
     using Strings for uint256;
     
@@ -57,7 +59,7 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata {
         return _nextTokenId - 1;
     }
 
-    function tokenByIndex(uint256 index) public view  returns (uint256) {
+    function tokenByIndex(uint256 index) public view returns (uint256) {
         require(index < totalSupply(), 'ERC721A: global index out of bounds');
         return index + 1;
     }
@@ -121,7 +123,7 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata {
         return '';
     }
 
-    function approve(address to, uint256 tokenId) public override {
+    function approve(address to, uint256 tokenId) public override onlyAllowedOperatorApproval(to) {
         address owner = ERC721A.ownerOf(tokenId);
         require(to != owner, 'ERC721A: approval to current owner');
 
@@ -139,7 +141,7 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata {
         return _tokenApprovals[tokenId];
     }
 
-    function setApprovalForAll(address operator, bool approved) public override {
+    function setApprovalForAll(address operator, bool approved) public override onlyAllowedOperatorApproval(operator) {
         require(operator != _msgSender(), 'ERC721A: approve to caller');
 
         _operatorApprovals[_msgSender()][operator] = approved;
@@ -150,15 +152,15 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata {
         return _operatorApprovals[owner][operator];
     }
 
-    function transferFrom(address from, address to, uint256 tokenId) public override {
+    function transferFrom(address from, address to, uint256 tokenId) public override onlyAllowedOperator(from) {
         _transfer(from, to, tokenId);
     }
 
-    function safeTransferFrom(address from, address to, uint256 tokenId) public override {
+    function safeTransferFrom(address from, address to, uint256 tokenId) public override onlyAllowedOperator(from) {
         safeTransferFrom(from, to, tokenId, '');
     }
 
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public override {
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public override onlyAllowedOperator(from) {
         _transfer(from, to, tokenId);
         require(
             _checkOnERC721Received(from, to, tokenId, _data),
