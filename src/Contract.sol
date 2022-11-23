@@ -47,9 +47,10 @@ contract Contract is ERC721A, Ownable, ReentrancyGuard {
         _;
     }
 
-    function devMint(uint256 qty) external onlyOwner {
+    function devMint(uint256 mintAmount) external onlyOwner {
         require(_paused == true, "Must be paused");
-        _safeMint(msg.sender, qty);
+        require(totalSupply() + mintAmount <= maxSupply, "This amount exceeds the max supply!");
+        _safeMint(msg.sender, mintAmount);
     }
 
     function withdraw() public onlyOwner {
